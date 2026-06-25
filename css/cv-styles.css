@@ -1,0 +1,253 @@
+/* ============================================================
+   CV BOOSTER PRO — Styles du document CV
+   Deux variantes : "classic" (fidèle à l'original) et "modern"
+   Toutes pilotées par variables CSS (--cv-primary, etc.)
+   ============================================================ */
+
+.cv-doc {
+  font-family: 'Calibri', 'Arial', sans-serif;
+  color: var(--cv-text);
+  background: #ffffff;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 16mm 18mm;
+  font-size: 10.5pt;
+  line-height: 1.45;
+}
+
+.cv-doc * { box-sizing: border-box; }
+
+/* ---------- HEADER ---------- */
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 3px solid var(--cv-primary);
+}
+
+.cv-name {
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--cv-primary);
+  margin: 0 0 4px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.cv-title {
+  font-size: 12pt;
+  color: var(--cv-secondary);
+  margin: 0;
+  font-weight: 600;
+}
+
+.cv-header-contact {
+  text-align: right;
+  font-size: 9.5pt;
+  color: var(--cv-textlight);
+  white-space: nowrap;
+}
+.cv-header-contact p { margin: 2px 0; }
+
+/* ---------- SECTIONS ---------- */
+.cv-section { margin-bottom: 14px; }
+
+.cv-h2 {
+  font-size: 12.5pt;
+  font-weight: 700;
+  color: var(--cv-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 4px 0;
+}
+
+.cv-section-line {
+  height: 2px;
+  background: var(--cv-accent);
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.cv-item-desc {
+  font-size: 10pt;
+  color: var(--cv-text);
+  white-space: pre-line;
+}
+
+.cv-list { list-style: none; margin: 0; padding: 0; }
+
+.cv-item { margin-bottom: 10px; }
+.cv-item:last-child { margin-bottom: 0; }
+.cv-item-compact { margin-bottom: 4px; font-size: 10pt; }
+
+.cv-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.cv-item-title {
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: var(--cv-text);
+}
+
+.cv-item-dates {
+  font-size: 9.5pt;
+  color: var(--cv-textlight);
+  white-space: nowrap;
+  font-style: italic;
+}
+
+.cv-item-subtitle {
+  font-size: 10pt;
+  color: var(--cv-secondary);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* ---------- LANGUES ---------- */
+.cv-list-langues {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cv-lang-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cv-lang-name {
+  width: 110px;
+  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 10pt;
+}
+.cv-lang-bar {
+  flex-grow: 1;
+  height: 8px;
+  background: var(--cv-bglight);
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 200px;
+}
+.cv-lang-fill {
+  display: block;
+  height: 100%;
+  background: var(--cv-secondary);
+  border-radius: 4px;
+}
+
+/* ---------- PROFIL ---------- */
+.cv-profile .cv-item-desc { font-style: italic; }
+
+/* ---------- FOOTER ---------- */
+.cv-footer {
+  margin-top: 18px;
+  padding-top: 10px;
+  border-top: 1px solid var(--cv-bglight);
+  font-size: 9pt;
+  color: var(--cv-textlight);
+}
+.cv-declaration { margin: 0 0 4px 0; font-style: italic; }
+.cv-place-date { margin: 0; font-weight: 600; }
+
+/* ============================================================
+   VARIANTE "modern" — mise en page à bandeau coloré + 2 colonnes
+   ============================================================ */
+.cv-style-modern.cv-doc {
+  padding: 0;
+}
+
+.cv-style-modern .cv-header {
+  background: var(--cv-primary);
+  color: #ffffff;
+  border-bottom: none;
+  padding: 14mm 18mm 12mm 18mm;
+  margin-bottom: 0;
+}
+
+.cv-style-modern .cv-name {
+  color: #ffffff;
+}
+
+.cv-style-modern .cv-title {
+  color: var(--cv-accent);
+}
+
+.cv-style-modern .cv-header-contact {
+  color: #ffffff;
+  opacity: 0.92;
+}
+
+.cv-style-modern > .cv-section,
+.cv-style-modern > .cv-footer {
+  padding-left: 18mm;
+  padding-right: 18mm;
+}
+
+.cv-style-modern > .cv-section:first-of-type {
+  margin-top: 14px;
+}
+
+.cv-style-modern .cv-h2 {
+  position: relative;
+  padding-left: 14px;
+  color: var(--cv-primary);
+}
+.cv-style-modern .cv-h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 5px;
+  background: var(--cv-accent);
+  border-radius: 2px;
+}
+
+.cv-style-modern .cv-section-line {
+  background: var(--cv-bglight);
+  height: 1px;
+}
+
+.cv-style-modern .cv-item-subtitle {
+  color: var(--cv-primary);
+}
+
+.cv-style-modern .cv-footer {
+  margin-top: 10px;
+  margin-bottom: 14mm;
+  padding-top: 10px;
+  padding-bottom: 0;
+}
+
+/* ============================================================
+   Mise à l'échelle pour aperçu écran (le CV reste A4 mais on le
+   réduit visuellement dans un conteneur scrollable)
+   ============================================================ */
+.cv-preview-wrap {
+  background: #d8dee5;
+  padding: 24px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.cv-preview-scale {
+  transform-origin: top center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+}
+
+/* ---------- PRINT ---------- */
+@media print {
+  body { margin: 0; }
+  .cv-doc { box-shadow: none; margin: 0; }
+}
