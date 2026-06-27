@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Booster Pro — Créez votre CV professionnel</title>
+<link rel="icon" href="assets/logo_cvbooster.png">
+
+<!-- Librairies externes (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- Styles -->
+<link rel="stylesheet" href="css/app-styles.css">
+<link rel="stylesheet" href="css/cv-styles.css">
+<link rel="stylesheet" href="css/scan-styles.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="app-topbar">
+    <div class="app-logo">
+      <img src="assets/logo_cvbooster.png" alt="CV Booster Pro">
+      <div class="app-logo-text">CV Booster Pro<small>Créez votre CV professionnel en quelques minutes</small></div>
+    </div>
+    <div class="app-topbar-actions">
+      <a href="#scan" class="btn btn-outline btn-sm" id="scanNavLink">🔍 Scan ATS</a>
+      <a href="#admin" class="btn btn-outline btn-sm" id="adminLink">Espace administrateur</a>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ============ VUE 0 : SAISIE DU CODE ============ -->
+    <section id="viewGate" class="view active">
+      <div class="gate-wrap">
+        <div class="gate-card">
+          <img src="assets/logo_cvbooster.png" class="gate-logo" alt="CV Booster Pro">
+          <h1>Bienvenue sur CV Booster Pro</h1>
+          <p class="gate-sub">Saisissez votre code d'accès unique pour créer votre CV professionnel.</p>
+          <input type="text" id="gateCodeInput" class="input-code" placeholder="CVB-XXXX-XXXX" maxlength="20">
+          <div class="gate-error" id="gateError"></div>
+          <button class="btn btn-primary btn-block" id="gateSubmitBtn">Continuer</button>
+          <p style="font-size:12.5px;color:#9aa3af;margin-top:14px;">Si vous aviez déjà commencé avec ce code, vous reprendrez automatiquement où vous en étiez.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============ VUE 1 : CHOIX DU PROFIL ============ -->
+    <section id="viewProfile" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title">Choisissez votre profil</h2>
+          <p class="step-subtitle">Sélectionnez le profil qui correspond le mieux à votre parcours.</p>
+        </div>
+      </div>
+      <div class="profile-grid" id="profileCardsContainer"></div>
+    </section>
+
+    <!-- ============ VUE 2 : CHOIX DU DESIGN / COULEUR ============ -->
+    <section id="viewPalette" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title">Choisissez votre design</h2>
+          <p class="step-subtitle">Sélectionnez le modèle de couleur qui vous plaît. Vous pourrez le changer plus tard.</p>
+        </div>
+      </div>
+      <div class="palette-grid" id="paletteCardsContainer"></div>
+    </section>
+
+    <!-- ============ VUE 3 : FORMULAIRE DYNAMIQUE ============ -->
+    <section id="viewForm" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title" id="formStepTitle">Formulaire</h2>
+          <p class="step-subtitle" id="formStepSubtitle"></p>
+        </div>
+        <div class="step-progress" id="formProgressDots"></div>
+      </div>
+
+      <div id="formSectionContainer"></div>
+
+      <div class="form-nav">
+        <button class="btn btn-outline" id="formPrevBtn">← Précédent</button>
+        <button class="btn btn-primary" id="formNextBtn">Suivant →</button>
+      </div>
+    </section>
+
+    <!-- ============ VUE 4 : APERÇU + TÉLÉCHARGEMENT ============ -->
+    <section id="viewPreview" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title">Votre CV est prêt 🎉</h2>
+          <p class="step-subtitle">Vérifiez l'aperçu puis téléchargez votre CV au format souhaité.</p>
+        </div>
+      </div>
+
+      <div class="preview-layout">
+        <div class="cv-scale-container">
+          <div class="cv-preview-wrap" id="cvPreviewWrap"></div>
+        </div>
+        <aside class="preview-side">
+          <h3>Télécharger</h3>
+          <button class="btn btn-primary btn-block" id="downloadPdfBtn">📄 Télécharger en PDF</button>
+          <button class="btn btn-success btn-block" id="downloadWordBtn">📝 Télécharger en Word</button>
+          <button class="btn btn-secondary btn-block" id="backToFormBtn">← Modifier mes informations</button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ VUE SCAN 0 : SAISIE DU CODE SCAN ============ -->
+    <section id="viewScanGate" class="view">
+      <div class="gate-wrap">
+        <div class="gate-card">
+          <img src="assets/logo_cvbooster.png" class="gate-logo" alt="CV Booster Pro">
+          <h1>Scan ATS — Analysez votre CV</h1>
+          <p class="gate-sub">Saisissez votre code d'accès Scan pour analyser votre CV face à une offre d'emploi.</p>
+          <input type="text" id="scanGateCodeInput" class="input-code" placeholder="SCAN-XXXX-XXXX" maxlength="20">
+          <div class="gate-error" id="scanGateError"></div>
+          <button class="btn btn-primary btn-block" id="scanGateSubmitBtn">Continuer</button>
+          <p style="font-size:12.5px;color:#9aa3af;margin-top:14px;">Ce code est différent de celui utilisé pour créer un CV.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VUE SCAN 1 : UPLOAD CV + OFFRE ============ -->
+    <section id="viewScanUpload" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title">Déposez votre CV et l'offre visée</h2>
+          <p class="step-subtitle">Plus l'offre d'emploi est précise, plus l'analyse des mots-clés sera pertinente.</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <h3 class="form-section-title">1. Votre CV</h3>
+        <p class="form-section-desc">Formats acceptés : PDF ou Word (.docx). Taille max. 10 Mo.</p>
+        <div class="scan-dropzone" id="scanCvDropzone">
+          <input type="file" id="scanCvInput" accept=".pdf,.docx" hidden>
+          <div class="scan-dropzone-inner" id="scanCvDropzoneInner">
+            <span class="scan-dropzone-icon">📄</span>
+            <p class="scan-dropzone-text">Cliquez ou glissez-déposez votre CV ici</p>
+            <p class="scan-dropzone-hint">PDF ou DOCX uniquement</p>
+          </div>
+        </div>
+        <div class="scan-file-status" id="scanCvStatus"></div>
+      </div>
+
+      <div class="form-card">
+        <h3 class="form-section-title">2. L'offre d'emploi visée</h3>
+        <p class="form-section-desc">Collez le texte de l'offre, ou importez-la en PDF / Word.</p>
+
+        <div class="scan-tabs" id="scanJobTabs">
+          <button type="button" class="scan-tab active" data-tab="paste">✍️ Coller le texte</button>
+          <button type="button" class="scan-tab" data-tab="file">📎 Importer un fichier</button>
+        </div>
+
+        <div class="scan-tab-panel active" id="scanJobPanelPaste">
+          <textarea class="field-textarea" id="scanJobTextarea" placeholder="Collez ici le texte intégral de l'offre d'emploi (missions, compétences requises, profil recherché...)" style="min-height:180px;"></textarea>
+        </div>
+
+        <div class="scan-tab-panel" id="scanJobPanelFile">
+          <div class="scan-dropzone" id="scanJobDropzone">
+            <input type="file" id="scanJobInput" accept=".pdf,.docx" hidden>
+            <div class="scan-dropzone-inner" id="scanJobDropzoneInner">
+              <span class="scan-dropzone-icon">📋</span>
+              <p class="scan-dropzone-text">Cliquez ou glissez-déposez l'offre d'emploi ici</p>
+              <p class="scan-dropzone-hint">PDF ou DOCX uniquement</p>
+            </div>
+          </div>
+          <div class="scan-file-status" id="scanJobStatus"></div>
+        </div>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn btn-outline" id="scanBackBtn">← Retour</button>
+        <button class="btn btn-primary" id="scanAnalyzeBtn">🔍 Analyser mon CV</button>
+      </div>
+    </section>
+
+    <!-- ============ VUE SCAN 2 : RÉSULTATS ============ -->
+    <section id="viewScanResults" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title">Résultat de votre Scan ATS</h2>
+          <p class="step-subtitle">Voici le détail de l'analyse de votre CV, critère par critère.</p>
+        </div>
+      </div>
+
+      <div id="scanResultsContainer"></div>
+
+      <div class="form-nav">
+        <button class="btn btn-outline" id="scanRestartBtn">← Refaire un scan</button>
+        <button class="btn btn-secondary" id="scanPrintBtn">🖨️ Imprimer / Enregistrer en PDF</button>
+      </div>
+    </section>
+
+    <!-- ============ VUE ADMIN : LOGIN ============ -->
+    <section id="viewAdminLogin" class="view">
+      <div class="admin-login">
+        <h2>Espace administrateur</h2>
+        <p style="color:#6b7280;font-size:14px;margin-bottom:20px;">Accès réservé. Saisissez le mot de passe administrateur.</p>
+        <input type="password" id="adminPasswordInput" class="input-code" placeholder="Mot de passe" style="text-transform:none;letter-spacing:normal;">
+        <div class="gate-error" id="adminLoginError"></div>
+        <button class="btn btn-primary btn-block" id="adminLoginBtn">Se connecter</button>
+      </div>
+    </section>
+
+    <!-- ============ VUE ADMIN : DASHBOARD ============ -->
+    <section id="viewAdminDashboard" class="view">
+      <div class="step-header">
+        <div>
+          <h2 class="step-title">Tableau de bord administrateur</h2>
+          <p class="step-subtitle">Suivi des codes et des dossiers clients.</p>
+        </div>
+      </div>
+
+      <div class="scan-tabs" id="adminTabs">
+        <button type="button" class="scan-tab active" data-admin-tab="cv">📄 CV Booster Pro</button>
+        <button type="button" class="scan-tab" data-admin-tab="scan">🔍 Scan ATS</button>
+      </div>
+
+      <!-- ---- Onglet CV ---- -->
+      <div class="scan-tab-panel active" id="adminPanelCv">
+        <div class="form-card" id="adminStatsBar" style="display:flex;gap:30px;font-size:14px;color:#6b7280;flex-wrap:wrap;"></div>
+
+        <div class="form-card" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+          <div class="field-group" style="flex:1;min-width:220px;">
+            <label class="field-label">Réactiver un code CV (cas de blocage client)</label>
+            <input type="text" id="adminUnlockInput" class="field-input" placeholder="CVB-XXXX-XXXX">
+          </div>
+          <button class="btn btn-primary" id="adminUnlockBtn">Réactiver ce code</button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Code</th><th>Profil</th><th>Client</th><th>Email</th><th>Téléphone</th><th>Statut</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="adminSubmissionsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ---- Onglet Scan ---- -->
+      <div class="scan-tab-panel" id="adminPanelScan">
+        <div class="form-card" id="adminScanStatsBar" style="display:flex;gap:30px;font-size:14px;color:#6b7280;flex-wrap:wrap;"></div>
+
+        <div class="form-card" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+          <div class="field-group" style="flex:1;min-width:220px;">
+            <label class="field-label">Réactiver un code Scan (cas de blocage client)</label>
+            <input type="text" id="adminScanUnlockInput" class="field-input" placeholder="SCAN-XXXX-XXXX">
+          </div>
+          <button class="btn btn-primary" id="adminScanUnlockBtn">Réactiver ce code</button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Code</th><th>Fichier CV</th><th>Score global</th><th>Date</th><th>Statut</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="adminScanResultsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    © 2026 CV Booster Pro — Développé par DynamixVision
+    <img src="assets/logo_dynamixvision.png" alt="DynamixVision">
+  </footer>
+</div>
+
+<!-- Loader plein écran -->
+<div class="app-loader" id="appLoader">
+  <div class="spinner"></div>
+  <div>Chargement…</div>
+</div>
+
+<!-- Toast de notification -->
+<div class="toast" id="appToast"></div>
+
+<!-- Scripts de l'application (ordre important) -->
+<script src="js/config.js"></script>
+<script src="js/cv-renderer.js"></script>
+<script src="js/form-engine.js"></script>
+<script src="js/signature-pad.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/doc-generator.js"></script>
+<script src="js/app.js"></script>
+<script src="js/file-extractor.js"></script>
+<script src="js/scan-engine.js"></script>
+<script src="js/scan-app.js"></script>
+
+<script>
+  // Lien vers l'espace admin (ancre #admin)
+  document.getElementById("adminLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById("viewAdminLogin").classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Lien vers le module Scan ATS (ancre #scan)
+  document.getElementById("scanNavLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById("viewScanGate").classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
+</body>
+</html>
