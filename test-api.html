@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testeur API — CV Booster Pro</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 640px; margin: 24px auto; padding: 0 16px; color:#1f2937; line-height:1.5; }
+  h1 { font-size: 19px; margin-bottom: 4px; }
+  p { font-size: 14px; color:#4b5563; }
+  label { font-size: 13px; font-weight:600; display:block; margin-bottom:4px; }
+  input, textarea { width: 100%; box-sizing: border-box; padding: 10px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 14px; font-family: inherit; }
+  button { background:#1e3a8a; color:#fff; border:none; padding:13px 20px; border-radius:10px; font-size:16px; font-weight:600; width:100%; margin-bottom:16px; }
+  button:active { opacity:0.85; }
+  pre { background:#f3f4f6; padding:12px; border-radius:8px; white-space:pre-wrap; word-break:break-all; font-size:12.5px; max-height:340px; overflow:auto; }
+  .status { font-weight:700; margin: 4px 0 10px 0; font-size:15px; }
+  .ok { color: #059669; }
+  .err { color: #dc2626; }
+  .hint { font-size:12px; color:#6b7280; margin-top:-8px; margin-bottom:16px; }
+</style>
+</head>
+<body>
+  <h1>🔧 Testeur API — CV Booster Pro</h1>
+  <p>Envoie une vraie requête <strong>POST</strong> vers ton backend Apps Script, exactement comme le fait l'application (contrairement à une simple visite d'URL, qui est une requête GET).</p>
+
+  <label for="url">URL /exec de ton déploiement</label>
+  <input id="url" value="https://script.google.com/macros/s/AKfycbzp-eOLwUldjjkCvHZajFkzve6lUu8qLfo3rHxH3QiAAXAP3f8wk1vi7Lt5kV2RAe8M3A/exec">
+
+  <label for="action">Action à tester</label>
+  <input id="action" value="verifyCode">
+
+  <label for="payload">Données envoyées (JSON)</label>
+  <textarea id="payload" rows="2">{"code":"TEST-0000-0000"}</textarea>
+
+  <button onclick="runTest()">▶ Lancer le test POST</button>
+
+  <div id="statusLine" class="status"></div>
+  <div id="hint" class="hint"></div>
+  <pre id="output">Le résultat s'affichera ici…</pre>
+
+<script>
+async function runTest() {
+  const url = document.getElementById('url').value.trim();
+  const action = document.getElementById('action').value.trim();
+  const statusEl = document.getElementById('statusLine');
+  const hintEl = document.getElementById('hint');
+  const out = document.getElementById('output');
+  let payload = {};
+  try {
+    payload = JSON.parse(document.getElementById('payload').value || "{}");
+  } catch (e) {
+    out.textContent = "Le JSON des données envoyées est invalide : " + e.message;
+    return;
+  }
+
+  statusEl.textContent = 'Requête en cours…';
+  statusEl.className = 'status';
+  hintEl.textContent = '';
+  out.textContent = '';
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action, ...payload })
+    });
+    const text = await res.text();
+
+    statusEl.textContent = 'Statut HTTP : ' + res.status + ' ' + res.statusText;
+    statusEl.className = 'status ' + (res.ok ? 'ok' : 'err');
+
+    if (res.ok) {
+      hintEl.textContent = "✅ Le serveur a bien répondu. Si le JSON ci-dessous ressemble à {\"ok\":false,\"error\":\"...\"} c'est normal (le code TEST-0000-0000 n'existe pas) — l'important est que ce soit du JSON, pas une erreur.";
+    } else if (res.status === 404) {
+      hintEl.textContent = "❌ 404 confirmé en POST : l'URL est injoignable pour ce type de requête. Vérifie qu'il n'y a pas d'espace ou de caractère en trop copié dans l'URL, et que le déploiement est bien de type \"Application Web\" (pas \"Complément\" ni \"Exécutable API\").";
+    } else {
+      hintEl.textContent = "❌ Le serveur a répondu mais avec une erreur. Regarde le contenu ci-dessous.";
+    }
+
+    out.textContent = text;
+  } catch (err) {
+    statusEl.textContent = 'Erreur réseau / CORS';
+    statusEl.className = 'status err';
+    hintEl.textContent = "Le navigateur n'a même pas reçu de réponse HTTP (souvent un blocage CORS, ou l'accès du déploiement n'est pas \"Tout le monde\").";
+    out.textContent = String(err);
+  }
+}
+</script>
+</body>
+</html>
